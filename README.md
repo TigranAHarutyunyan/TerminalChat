@@ -20,8 +20,8 @@ The ability to transfer data between two devices on the same local network.
 6. When the second user accepts the connection, a chat opens where the second user is on the left side and the current user is on the right side. In the chat, the first letter of the user’s name and the time when the message is sent are written.
 7. To send a file, use the following format: /file:path.
 8. To disconnect a user these two commands are used
-    1. /disconnect - closes the chat with the user and sends a request to the server that he is already free and an activator for other connections.
-    2. /exit - This disconnects the user permanently and sends a request to the server where the user's status becomes inactive.
+    - /disconnect - closes the chat with the user and sends a request to the server that he is already free and an activator for other connections.
+    - /exit - This disconnects the user permanently and sends a request to the server where the user's status becomes inactive.
 ## Technology Stack
 - Linux (distribution Ubuntu OS )
 - Computer Network
