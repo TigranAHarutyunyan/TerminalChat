@@ -15,7 +15,7 @@ void accept_handler(const boost::system::error_code &err, std::shared_ptr<tcp::s
 	if(!err) {
 		std::cout << "Connection accepted" << std::endl;
 		streambuf buf;
-		async_read_until(socket, buf, '\n', [&](const boost::system::error_code &err, std::size_t bytes_transferred) {
+		async_read_until(*socket, buf, '\n', [&](const boost::system::error_code &err, std::size_t bytes_transferred) {
 			read_handler(err, buf, bytes_transferred);
 		});
 		socket->shutdown(tcp::socket::shutdown_both);
