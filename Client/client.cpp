@@ -4,7 +4,7 @@
 #include <boost/asio.hpp>
 #include <string>
 #include <cstring>
-#define FILE_PATH "/etc/server_config.conf"
+#define FILE_PATH "/etc/_config.serverconf"
 
 bool check_file() {
 	return std::filesystem::exists(FILE_PATH);
@@ -45,8 +45,21 @@ void write_to_file(int argc, char* argv[]) {
 	out.close();
 	std::cout << "File has created" << std::endl;
 }
+void  sendData(boost::asio:: ip :: tcp :: socket& socket , const std:: string& message ){
+	boost:: asio::write(socket , boost:: asio :: buffer(message));
+	std:: cout << "Data Send " << std:: endl;
+}
+std:: string receiveData(boost:: asio :: ip :: tcp :: socket& socket ){
+	boost:: asio :: streambuf buf ;
+	boost:: asio :: read_until(socket , buf  , '\n');
+	std::istream in(&buf);
+    std::string data;
+    std::getline(in, data);
+    return data;
 
+} 
 int main (int argc, char* argv[]) {
+	boost:: asio :: io_context io_context ;
 	std::string server_ip;
 	std::string server_hostname;
 	std::string user_name;
@@ -65,5 +78,11 @@ int main (int argc, char* argv[]) {
 			}
 		}
 	}
+	boost:: asio :: ip :: tcp :: endpoint  endpoint(boost:: asio :: ip :: address :: from_string(server_ip), 5001);
+	boost :: asio :: ip :: tcp :: socket socket(io_context);
+	socket.connect(endpoint);
+	
+
+	
 	return 0;
 }
