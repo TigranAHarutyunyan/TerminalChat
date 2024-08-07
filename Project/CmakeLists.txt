@@ -1,4 +1,19 @@
 cmake_minimum_required(VERSION 3.20)
 project(Client)
-set(CMAKE_CXX_STANDARD 17 )
+set(CMAKE_CXX_STANDARD 17)
+
+# Ensure CMake can find Boost
+set(CMAKE_PREFIX_PATH "/opt/homebrew/Cellar/boost/1.85.0")
+
+# Find Boost libraries
+find_package(Boost 1.85.0 REQUIRED COMPONENTS system thread)
+
+# Include Boost headers
+include_directories(${Boost_INCLUDE_DIRS})
+
+# Add executables
 add_executable(Client client.cpp)
+
+# Link Boost libraries
+target_link_libraries(Client PUBLIC Boost::system Boost::thread)
+
