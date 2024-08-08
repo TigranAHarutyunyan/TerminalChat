@@ -4,7 +4,7 @@
 #include <boost/asio.hpp>
 #include <string>
 #include <cstring>
-#define FILE_PATH "/etc/_config.serverconf"
+#define FILE_PATH "/etc/_configserver.conf"
 
 bool check_file() {
 	return std::filesystem::exists(FILE_PATH);
@@ -45,24 +45,36 @@ void write_to_file(int argc, char* argv[]) {
 	out.close();
 	std::cout << "File has created" << std::endl;
 }
-void  sendData(boost::asio:: ip :: tcp :: socket& socket , const std:: string& message ){
-	boost:: asio::write(socket , boost:: asio :: buffer(message));
+void sendData(boost:: asio :: ip :: tcp :: socket& socket ,  const std:: string& message  ){
+	boost :: asio::write(socket , boost:: asio :: buffer(message));
 	std:: cout << "Data Send " << std:: endl;
 }
-std:: string receiveData(boost:: asio :: ip :: tcp :: socket& socket ){
+void  receiveData(boost:: asio :: ip :: tcp :: socket& socket ){
 	boost:: asio :: streambuf buf ;
 	boost:: asio :: read_until(socket , buf  , '\n');
 	std::istream in(&buf);
+	std:: string  user_name ; 
+	std:: string client_ip;
     std::string data;
     std::getline(in, data);
-    return data;
-
+	int position  =  data.find('>');
+	for(int i = 0 ; i <= data.size() ;++i){
+		if(data[i] == '>' ) {
+			user_name = data.substr(0 , i -1 ) ;
+			client_ip = data.substr(i); 
+			break;
+		}
+	}
+	std:: cout << user_name  << std:: endl;
+	std:: cout << client_ip << std:: endl;
 } 
 int main (int argc, char* argv[]) {
 	boost:: asio :: io_context io_context ;
 	std::string server_ip;
 	std::string server_hostname;
 	std::string user_name;
+	std::string client_ip ; 
+	std:: string  data = "LOGIN" + user_name + ">" + client_ip ;
 	if (check_file()) {
 		read_from_file(server_ip, server_hostname);
 		get_user_name(user_name);
@@ -81,8 +93,8 @@ int main (int argc, char* argv[]) {
 	boost:: asio :: ip :: tcp :: endpoint  endpoint(boost:: asio :: ip :: address :: from_string(server_ip), 5001);
 	boost :: asio :: ip :: tcp :: socket socket(io_context);
 	socket.connect(endpoint);
-	
+	sendData(socket , user_name) ;
+	receiveData (socket);
 
-	
-	return 0;
+		
 }
