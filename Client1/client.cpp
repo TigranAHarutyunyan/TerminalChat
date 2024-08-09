@@ -46,11 +46,11 @@ void write_to_file(int argc, char* argv[]) {
 	std::cout << "File has created" << std::endl;
 }
 
-void write_to_socket(std::shared_ptr<boost::asio::ip::tcp::socket> tcp_socket, std::string &message) {
-	write(*tcp_socket, boost::asio::buffer(message));
+void write_to_socket(boost::asio::ip::tcp::socket &tcp_socket, std::string &message) {
+	write(tcp_socket, boost::asio::buffer(message));
 }
 
-void connect_to_another_user(std::shared_ptr<boost::asio::ip::tcp::socket> socket, std::string &username) {
+void connect_to_another_user(boost::asio::ip::tcp::socket &socket, std::string &username) {
 	std::string user_to_connect;
 	std::cout << "User to connect: ";
 	std::getline(std::cin, user_to_connect);
@@ -58,8 +58,8 @@ void connect_to_another_user(std::shared_ptr<boost::asio::ip::tcp::socket> socke
 	write_to_socket(socket, message);
 }
 
-void async_read_from_socket(std::shared_ptr<boost::asio::ip::tcp::socket> tcp_socket, boost::asio::streambuf &buf, std::string &user_ip, std::string &username) {
-	async_read_until(*tcp_socket, buf, '\n', [tcp_socket, &buf, &user_ip, &username](const boost::system::error_code &err, size_t bytes_transferred){
+void async_read_from_socket(boost::asio::ip::tcp::socket &tcp_socket, boost::asio::streambuf &buf, std::string &user_ip, std::string &username) {
+	async_read_until(tcp_socket, buf, '\n', [&](const boost::system::error_code &err, size_t bytes_transferred){
 		if(!err) {
 			std::istream in(&buf);
 			std::string data;
@@ -87,6 +87,10 @@ void async_read_from_socket(std::shared_ptr<boost::asio::ip::tcp::socket> tcp_so
 				std::cout << data.substr(5, data.size()) << std::endl;
 				return;
 			}
+			else if(data.substr(0, 5) == "USRER") {
+				std::cout << data.substr(5, data.size()) << std::endl;
+				return;
+			}
 		} else {
 			std::cout << "Error: " << err.message() << std::endl;
 		}
@@ -108,6 +112,7 @@ int main (int argc, char* argv[]) {
 	} else {
 		if (!check_args(argc)) {
 			std::cout << "Please configure server config file with option --config <IP> <Hostname>" << std::endl;
+			return false;
 		} else {
 			if (std::strcmp(argv[1], "--config") == 0) {
 				write_to_file(argc, argv);
@@ -116,13 +121,14 @@ int main (int argc, char* argv[]) {
                 std::getline(std::cin, user_ip);
 			} else {
 				std::cout << "Please configure server config file with option --config <IP> <Hostname>" << std::endl;
+				return false;
 			}
 		}
 	}
 	boost::asio::io_context ioContext;	
 	boost::asio::ip::tcp::endpoint tcp_endpoint(boost::asio::ip::address::from_string(server_ip), 5001);
-	std::shared_ptr<boost::asio::ip::tcp::socket> tcp_socket = std::make_shared<boost::asio::ip::tcp::socket>(ioContext);
-	tcp_socket->connect(tcp_endpoint);
+	boost::asio::ip::tcp::socket tcp_socket(ioContext);
+	tcp_socket.connect(tcp_endpoint);
 	std::string message = "LOGIN" + user_name + '>' + user_ip + '\n';
 	write_to_socket(tcp_socket, message);
 	boost::asio::streambuf buf;

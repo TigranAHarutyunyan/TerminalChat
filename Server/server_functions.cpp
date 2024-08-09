@@ -32,8 +32,8 @@ void send_updates(std::string &resp_code, std::string &username) {
             } else {
                 message_for_other_sockets = resp_code + message_for_other_sockets + " " + active_user.first + " " + busy_users_list[active_user.first] + '\n';
             }
-            }
         }
+    }
     for (const auto &user_socket : user_socket_list) {
         if (user_socket.first == username) {
             write_to_socket(user_socket.second, message_for_current_socket);
@@ -46,9 +46,9 @@ void send_updates(std::string &resp_code, std::string &username) {
 
 void connect_to_another_user(std::shared_ptr<boost::asio::ip::tcp::socket> socket, std::string &current_user, std::string &user_to_connect) {
     std::string message;
-    if(user_list.count(user_to_connect) > 0) {
+    if(user_list.count(user_to_connect) != 0) {
         if(busy_users_list[user_to_connect] == "Busy") {
-            message = "BSYERThe user is busy";
+            message = "BSYERThe user is busy" + '\n';
             write_to_socket(socket, message);
             return;
         }
@@ -59,10 +59,7 @@ void connect_to_another_user(std::shared_ptr<boost::asio::ip::tcp::socket> socke
             busy_users_list[user_to_connect] = "Busy";
             //send_updates(current_user);
         }
-    } else {
-        message = "USRERUser does not exists" + '\n';
-        write_to_socket(socket, message);
-    }
+    } 
 }
 
 void disconnect_from_user(std::shared_ptr<boost::asio::ip::tcp::socket> socket, std::string &current_user, std::string &user_to_disconnect) {
