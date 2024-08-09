@@ -46,20 +46,18 @@ void send_updates(std::string &resp_code, std::string &username) {
 
 void connect_to_another_user(std::shared_ptr<boost::asio::ip::tcp::socket> socket, std::string &current_user, std::string &user_to_connect) {
     std::string message;
-    if(user_list.count(user_to_connect) != 0) {
-        if(busy_users_list[user_to_connect] == "Busy") {
-            message = "BSYERThe user is busy" + '\n';
-            write_to_socket(socket, message);
-            return;
-        }
-        else {
-            message = "CNNIP" + user_list[user_to_connect] + '\n';
-            write_to_socket(socket, message);
-            busy_users_list[current_user] = "Busy";
-            busy_users_list[user_to_connect] = "Busy";
-            //send_updates(current_user);
-        }
-    } 
+    if(busy_users_list[user_to_connect] == "Busy") {
+    	message = "BSYERThe user is busy" + '\n';
+        write_to_socket(socket, message);
+        return;
+    }
+   	else {
+   		message = "CNNIP" + user_list[user_to_connect] + '\n';
+        write_to_socket(socket, message);
+        busy_users_list[current_user] = "Busy";
+        busy_users_list[user_to_connect] = "Busy";
+        //send_updates(current_user);
+	}
 }
 
 void disconnect_from_user(std::shared_ptr<boost::asio::ip::tcp::socket> socket, std::string &current_user, std::string &user_to_disconnect) {

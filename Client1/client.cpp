@@ -68,28 +68,23 @@ void async_read_from_socket(boost::asio::ip::tcp::socket &tcp_socket, boost::asi
 			//std::string resp_code = data.substr(0, 5);
 			if(data.substr(0, 5) == "LOGOK") {
 				std::cout << data.substr(5, data.size()) << std::endl;
-				connect_to_another_user(tcp_socket, username);
-				return;
+				connect_to_another_user(tcp_socket, username);		
 			}
 			else if(data.substr(0, 5) == "UNERR") {
 				std::cout << data.substr(5, data.size()) << std::endl;
 				get_user_name(username);
 				message = "LOGIN" + username + '>' + user_ip + '\n';
-				write_to_socket(tcp_socket, message);
-				return;
+				write_to_socket(tcp_socket, message);		
 			}
 			else if(data.substr(0, 5) == "BSYER") {
 				std::cout << data.substr(5, data.size()) << std::endl;
-				connect_to_another_user(tcp_socket, username);
-				return;
+				connect_to_another_user(tcp_socket, username);		
 			}
 			else if(data.substr(0, 5) == "CNNIP") {
-				std::cout << data.substr(5, data.size()) << std::endl;
-				return;
+				std::cout << data.substr(5, data.size()) << std::endl;				
 			}
 			else if(data.substr(0, 5) == "USRER") {
 				std::cout << data.substr(5, data.size()) << std::endl;
-				return;
 			}
 		} else {
 			std::cout << "Error: " << err.message() << std::endl;
